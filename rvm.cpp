@@ -50,8 +50,10 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create) {
 	
 	// open file
 	string file_name = Rvm->dir + "/" + segname;
-	fstream segment(file_name, fstream::in | fstream::out | fstream::binary);
-	if(!segment) return (void *)-1;
+	fstream segment(file_name.c_str(), fstream::in | fstream::out | fstream::binary);
+	if(!segment.good()) {
+		segment.open(file_name, fstream::in | fstream::out | fstream::binary | fstream::trunc);
+	}
 	
 	// get file size
 	segment.seekg(0, segment.end);
@@ -209,7 +211,7 @@ void rvm_abort_trans(trans_t tid) {
 	RVM *Rvm = Trans->parent;
 
 	for(auto ite = Trans->logs.begin(); ite != Trans->logs.end(); ++ite) {
-		for(size_t i = ite->second.size()-1; i >= 0; --i) {
+		for(int i = (int)ite->second.size()-1; i >= 0; --i) {
 			size_t offset = ite->second[i].offset;
 			string data = ite->second[i].data;
 			memcpy((char *)ite->first + offset, data.c_str(), data.size());
