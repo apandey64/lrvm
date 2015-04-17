@@ -46,7 +46,7 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create) {
 
 	RVM *Rvm = (RVM *)rvm;
 
-	if(!Rvm->segname_size_map.count(segname)) return (void *)-1;
+	if(Rvm->segname_size_map.count(segname)) return (void *)-1;
 	
 	// open file
 	string file_name = Rvm->dir + "/" + segname;
